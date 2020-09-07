@@ -1,6 +1,7 @@
 /node_modules/
 /lib/
 /test/
+/components/
 
 # top level source
 my-element.js

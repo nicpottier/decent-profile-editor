@@ -1,20 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>&lt;my-element> Demo</title>
-    <script type="module" src="../my-element.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css"
+      rel="stylesheet"
+    />
     <style>
-      p {
-        border: solid 1px blue;
-        padding: 8px;
+      body {
+        font-family: 'Verdana, Geneva, sans-serif';
       }
     </style>
+    <!--
+      <script type="module" src="../frame-editor.js"></script>
+      <script type="module" src="../profile-chart.js"></script>
+      <script type="module" src="../profile-editor.js"></script>
+    -->
+    <script type="module" src="../profile-editor.bundled.js"></script>
   </head>
   <body>
-    <my-element>
-      <p>This is child content</p>
-    </my-element>
+    <div style="padding: 20px;">
+      <profile-editor></profile-editor>
+    </div>
   </body>
 </html>
