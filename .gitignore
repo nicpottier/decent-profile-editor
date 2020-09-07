@@ -2,6 +2,8 @@
 /lib/
 /test/
 /components/
+/_site/
+/site/profile-editor.bundled.js
 
 # top level source
 my-element.js
