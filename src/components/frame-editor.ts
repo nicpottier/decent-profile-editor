@@ -164,7 +164,7 @@ export class FrameEditor extends LitElement {
           <select
             id="triggerOperator"
             @change="${() =>
-              this._update({target: {operator: this._triggerOperator.value}})}"
+              this._update({trigger: {operator: this._triggerOperator.value}})}"
           >
             <option value="${TriggerOperator.GreaterThan}">Is Above</option>
             <option value="${TriggerOperator.LessThan}">Is Below</option>
@@ -253,7 +253,7 @@ export class FrameEditor extends LitElement {
     }
 
     return {
-      type: TriggerType.Pressure,
+      type: TriggerType.Flow,
       value: 4,
       operator: TriggerOperator.GreaterThan,
     };
