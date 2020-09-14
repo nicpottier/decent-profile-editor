@@ -19,12 +19,37 @@ function decr(x: number): number {
 @customElement('frame-editor')
 export class FrameEditor extends LitElement {
   static styles = css`
-    :host {
-      display: block;
+    .container {
+    }
+
+    .inline {
+      float: right;
+      display: none;
+      margin-top: -13px;
+      margin-right: 10px;
+    }
+
+    .inline > button {
+      background: white;
+      text-align: center;
+      height: 30px;
+      width: 30px;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 100%;
+    }
+
+    .container:hover > .inline {
+      display: inline;
+    }
+
+    .container:hover {
       background: #fafafa;
-      padding: 20px;
-      border: 1px solid #666;
-      margin-top: 10px;
     }
 
     .controls {
@@ -32,12 +57,63 @@ export class FrameEditor extends LitElement {
       display: flex;
     }
 
+    .block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 125px;
+      width: 125px;
+      font-size: 36px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+      color: white;
+    }
+
+    .tap {
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .value {
+      user-select: none;
+    }
+
     .temp {
-      margin-right: 40px;
+      background: #f26419;
+    }
+
+    .duration {
+      background: #333;
+    }
+
+    .flow {
+      background: #33658a;
+    }
+
+    .pressure {
+      background: #2a9d8f;
+    }
+
+    .unit {
+      font-size: 24px;
     }
 
     .target {
-      margin-right: 40px;
+      cursor: pointer;
+    }
+
+    .trigger {
+      background: #9e2a2b;
+    }
+
+    .clickable {
+      cursor: pointer;
+    }
+
+    .trigger.none {
+      background: #333;
+      width: 375px;
     }
   `;
 
@@ -89,174 +165,184 @@ export class FrameEditor extends LitElement {
   @query('#name')
   _name!: HTMLInputElement;
 
-  get _nameTemplate() {
-    if (this.editName) {
-      return html`
-        <input type="text" id="name" value="${this.name}" />
-        <button
-          @click="${() => {
-            this._update({name: this._name.value});
-            this._toggleEditName();
-          }}"
-        >
-          ok
-        </button>
-      `;
-    } else {
-      return html`
-        <b @click="${this._toggleEditName}"
-          >${this.name == '' ? 'undefined' : this.name}</b
-        >
-      `;
-    }
-  }
-
   get _tempTemplate() {
     return html`
-      <div>
-        <button @click="${() => this._update({temp: decr})}">-</button>
-        <b>Temp: </b>${this.temp}
-        <button @click="${() => this._update({temp: incr})}">+</button>
+      <div class="block temp">
+        <div class="tap" @click="${() => this._update({temp: incr})}"></div>
+        <div class="value">${this.temp}°C</div>
+        <div class="tap" @click="${() => this._update({temp: decr})}"></div>
       </div>
     `;
   }
 
   get _durationTemplate() {
     return html`
-      <div>
-        <button @click="${() => this._update({duration: decr})}">-</button>
-        <b>Duration: </b>${this.duration}s
-        <button @click="${() => this._update({duration: incr})}">+</button>
-      </div>
-    `;
-  }
-
-  get _triggerTemplate() {
-    let toggleTemplate = html` <div>
-      <input
-        type="checkbox"
-        .checked=${this.showTrigger}
-        @change="${this._toggleTrigger}"
-      />
-      Trigger
-    </div>`;
-
-    if (!this.showTrigger) {
-      return toggleTemplate;
-    }
-
-    return html`
-      ${toggleTemplate}
-      <div style="display:flex;">
-        <div>
-          <select
-            id="triggerType"
-            @change="${() =>
-              this._update({trigger: {type: this._triggerType.value}})}"
-          >
-            <option value="${TriggerType.Flow}">${TriggerType.Flow}</option>
-            <option value="${TriggerType.Pressure}"
-              >${TriggerType.Pressure}</option
-            >
-          </select>
-        </div>
-        <div>
-          <select
-            id="triggerOperator"
-            @change="${() =>
-              this._update({trigger: {operator: this._triggerOperator.value}})}"
-          >
-            <option value="${TriggerOperator.GreaterThan}">Is Above</option>
-            <option value="${TriggerOperator.LessThan}">Is Below</option>
-          </select>
-        </div>
-        <div>
-          <button @click="${() => this._update({trigger: {value: decr}})}">
-            -
-          </button>
-          ${this.triggerValue}
-          ${this.triggerType == TriggerType.Flow ? 'ml/s' : 'bar'}
-          <button @click="${() => this._update({trigger: {value: incr}})}">
-            +
-          </button>
-        </div>
+      <div class="block duration">
+        <div class="tap" @click="${() => this._update({duration: incr})}"></div>
+        <div class="value">${this.duration}s</div>
+        <div class="tap" @click="${() => this._update({duration: decr})}"></div>
       </div>
     `;
   }
 
   get _targetTemplate() {
     return html`
-      <div><b>Target</b></div>
-      <div>
-        <select
-          id="targetType"
-          @change="${() =>
-            this._update({target: {type: this._targetType.value}})}"
-        >
-          <option value="${TargetType.Flow}">${TargetType.Flow}</option>
-          <option value="${TargetType.Pressure}">${TargetType.Pressure}</option>
-        </select>
+      <div
+        class="block target clickable ${this.targetType}"
+        @click=${this._toggleType}
+      >
+        <div class="value">
+          ${this.targetType == TargetType.Flow
+            ? html`flow`
+            : html`<div>pres</div>
+                <div>sure</div>`}
+        </div>
       </div>
-      <div>
-        <button @click="${() => this._update({target: {value: decr}})}">
-          -
-        </button>
-        ${this.targetValue}
-        ${this.targetType == TargetType.Flow ? 'ml/s' : 'bar'}
-        <button @click="${() => this._update({target: {value: incr}})}">
-          +
-        </button>
+      <div class="block ${this.targetType}">
+        <div
+          class="tap"
+          @click="${() => this._update({target: {value: incr}})}"
+        ></div>
+        <div class="value">
+          ${this.targetValue}
+        </div>
+        <div class="unit">
+          ${this.targetType == TargetType.Flow ? 'ml/s' : 'bar'}
+        </div>
+        <div
+          class="tap"
+          @click="${() => this._update({target: {value: decr}})}"
+        ></div>
       </div>
+      <div
+        class="block clickable ${this.targetType}"
+        @click=${this._toggleInterpolate}
+      >
+        <div class="value">
+          ${this.targetInterpolate ? html`slow` : html`fast`}
+        </div>
+      </div>
+    `;
+  }
 
-      <div>
-        <input
-          type="checkbox"
-          .checked=${this.targetInterpolate}
-          @change="${() =>
-            this._update({target: {interpolate: (v: boolean) => !v}})}"
-        />
-        Interpolate
+  get _triggerTemplate() {
+    if (!this.showTrigger) {
+      return html`
+        <div class="block trigger none clickable" @click=${this._toggleTrigger}>
+          <div class="value">no trigger</div>
+        </div>
+      `;
+    }
+
+    return html`
+      <div
+        class="block trigger ${this.showTrigger
+          ? this.triggerType
+          : html`none`}"
+        @click=${this._toggleTrigger}
+      >
+        <div class="value clickable">
+          ${this.triggerType == TriggerType.Pressure
+            ? html`<div>pres</div>
+                <div>sure</div>`
+            : html`flow`}
+        </div>
+      </div>
+      <div class="block trigger" @click=${this._toggleTriggerOperator}>
+        <div class="value clickable">
+          ${this.triggerOperator == TriggerOperator.GreaterThan
+            ? html`&gt;`
+            : html`&lt;`}
+        </div>
+      </div>
+      <div class="block trigger">
+        <div
+          class="tap"
+          @click="${() => this._update({trigger: {value: incr}})}"
+        ></div>
+        <div class="value">${this.triggerValue}</div>
+        <div class="unit">
+          ${this.triggerType == TriggerType.Flow ? 'ml/s' : 'bar'}
+        </div>
+        <div
+          class="tap"
+          @click="${() => this._update({trigger: {value: incr}})}"
+        ></div>
       </div>
     `;
   }
 
   render() {
     return html`
-      ${this._nameTemplate}
-      <div class="controls">
-        <div class="temp">${this._tempTemplate} ${this._durationTemplate}</div>
-        <div class="target">${this._targetTemplate}</div>
-        <div class="trigger">${this._triggerTemplate}</div>
+      <div class="container">
+        <div class="controls">
+          ${this._durationTemplate} ${this._tempTemplate}${this._targetTemplate}
+          ${this._triggerTemplate}
+        </div>
       </div>
     `;
   }
 
-  _toggleEditName() {
-    this.editName = !this.editName;
-    this.requestUpdate();
+  _toggleType() {
+    this._update({
+      target: {
+        type:
+          this.targetType == TargetType.Flow
+            ? TargetType.Pressure
+            : TargetType.Flow,
+      },
+    });
+  }
+
+  _toggleTrigger() {
+    this._update({
+      trigger: (t: Trigger) => {
+        if (t) {
+          if (t.type == TriggerType.Flow) {
+            t.type = TriggerType.Pressure;
+            return t;
+          } else {
+            return null;
+          }
+        } else {
+          return {
+            type: TriggerType.Flow,
+            value: 4,
+            operator: TriggerOperator.GreaterThan,
+          };
+        }
+      },
+    });
+  }
+
+  _toggleTriggerOperator() {
+    this._update({
+      trigger: (t: Trigger) => {
+        if (t) {
+          t.operator =
+            t.operator == TriggerOperator.GreaterThan
+              ? TriggerOperator.LessThan
+              : TriggerOperator.GreaterThan;
+          return t;
+        } else {
+          return null;
+        }
+      },
+    });
+  }
+
+  _toggleInterpolate() {
+    this._update({
+      target: {
+        interpolate: (v: boolean) => !v,
+      },
+    });
   }
 
   _update(patch: Object) {
     this.dispatchEvent(
       new CustomEvent('frame-update', {detail: {index: this.index, ...patch}})
     );
-  }
-
-  _toggleTrigger() {
-    this.showTrigger = !this.showTrigger;
-    this._update({trigger: this._buildTrigger()});
-  }
-
-  _buildTrigger(): Trigger | null {
-    if (!this.showTrigger) {
-      return null;
-    }
-
-    return {
-      type: TriggerType.Flow,
-      value: 4,
-      operator: TriggerOperator.GreaterThan,
-    };
   }
 }
 

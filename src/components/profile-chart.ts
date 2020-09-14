@@ -39,6 +39,22 @@ export class ProfileChart extends LitElement {
       font-size: 8pt;
       fill: #aaa;
     }
+
+    .temp {
+      stroke: #f26419;
+    }
+
+    .flow {
+      stroke: #33658a;
+    }
+
+    .pressure {
+      stroke: #2a9d8f;
+    }
+
+    .highlight {
+      fill: rgba(220, 220, 220, 0.25);
+    }
   `;
 
   @property({type: Object})
@@ -160,11 +176,11 @@ export class ProfileChart extends LitElement {
 
     return svg`
       <rect 
+        class="highlight"
         x=${startX * this._xScale} 
         y=0 
         height="${this.height}" 
         width="${width * this._xScale}" 
-        fill="rgba(220, 220, 220, 0.25)"
       ></rect>
     `;
   }
@@ -187,6 +203,7 @@ export class ProfileChart extends LitElement {
       // changing types, we don't curve between them
       if (frame.target.type != lastType) {
         paths.push(svg`<path
+          class="${frame.target.type}"
           d=${this.line(x, y, x + width, y)}
           stroke-width="4"
           stroke-linecap="round"
@@ -194,6 +211,7 @@ export class ProfileChart extends LitElement {
         ></path>`);
       } else {
         paths.push(svg`<path
+          class="${frame.target.type}"
           d=${this.curveTo(x, lastY, x + width, y, frame.target.interpolate)}
           stroke-width="4"
           stroke-linecap="round"
@@ -204,17 +222,17 @@ export class ProfileChart extends LitElement {
 
       if (lastTempY == 0) {
         paths.push(svg`<path
+          class="temp"
           d=${this.line(x, tempY, x + width, tempY)}
           stroke-width="4"
           stroke-linecap="round"
-          stroke="red"
         ></path>`);
       } else {
         paths.push(svg`<path
+          class="temp"
           d=${this.curveTo(x, lastTempY, x + width, tempY, false)}
           stroke-linecap="round"
           stroke-width="4"
-          stroke="red"
           fill="transparent"
         ></path>`);
       }
