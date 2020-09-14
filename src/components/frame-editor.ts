@@ -71,12 +71,23 @@ export class FrameEditor extends LitElement {
     }
 
     .tap {
+      font-size: 24px;
       flex-grow: 1;
       cursor: pointer;
+      color: rgba(255, 255, 255, 0);
+      user-select: none;
+      flex-grow: 1;
+      line-height: 36px;
+    }
+
+    .tap:hover {
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .value {
       user-select: none;
+      line-height: 36px;
+      font-size: 36px;
     }
 
     .temp {
@@ -96,7 +107,7 @@ export class FrameEditor extends LitElement {
     }
 
     .unit {
-      font-size: 24px;
+      font-size: 18px;
     }
 
     .target {
@@ -168,9 +179,13 @@ export class FrameEditor extends LitElement {
   get _tempTemplate() {
     return html`
       <div class="block temp">
-        <div class="tap" @click="${() => this._update({temp: incr})}"></div>
+        <div class="tap" @click="${() => this._update({temp: incr})}">
+          &#9650;
+        </div>
         <div class="value">${this.temp}°C</div>
-        <div class="tap" @click="${() => this._update({temp: decr})}"></div>
+        <div class="tap" @click="${() => this._update({temp: decr})}">
+          &#9660;
+        </div>
       </div>
     `;
   }
@@ -178,9 +193,13 @@ export class FrameEditor extends LitElement {
   get _durationTemplate() {
     return html`
       <div class="block duration">
-        <div class="tap" @click="${() => this._update({duration: incr})}"></div>
+        <div class="tap" @click="${() => this._update({duration: incr})}">
+          &#9650;
+        </div>
         <div class="value">${this.duration}s</div>
-        <div class="tap" @click="${() => this._update({duration: decr})}"></div>
+        <div class="tap" @click="${() => this._update({duration: decr})}">
+          &#9660;
+        </div>
       </div>
     `;
   }
@@ -202,7 +221,9 @@ export class FrameEditor extends LitElement {
         <div
           class="tap"
           @click="${() => this._update({target: {value: incr}})}"
-        ></div>
+        >
+          &#9650;
+        </div>
         <div class="value">
           ${this.targetValue}
         </div>
@@ -212,7 +233,9 @@ export class FrameEditor extends LitElement {
         <div
           class="tap"
           @click="${() => this._update({target: {value: decr}})}"
-        ></div>
+        >
+          &#9660;
+        </div>
       </div>
       <div
         class="block clickable ${this.targetType}"
@@ -259,7 +282,9 @@ export class FrameEditor extends LitElement {
         <div
           class="tap"
           @click="${() => this._update({trigger: {value: incr}})}"
-        ></div>
+        >
+          &#9650;
+        </div>
         <div class="value">${this.triggerValue}</div>
         <div class="unit">
           ${this.triggerType == TriggerType.Flow ? 'ml/s' : 'bar'}
@@ -267,7 +292,9 @@ export class FrameEditor extends LitElement {
         <div
           class="tap"
           @click="${() => this._update({trigger: {value: incr}})}"
-        ></div>
+        >
+          &#9660;
+        </div>
       </div>
     `;
   }
