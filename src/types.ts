@@ -1,4 +1,4 @@
-export const MAX_TEMP = 100;
+export const MAX_TEMP = 110;
 export const MIN_TEMP = 40;
 
 export const MAX_PRESSURE = 12;
@@ -15,12 +15,16 @@ export interface Profile {
 }
 
 export interface Frame {
-  index: number;
   name: string;
   temp: number;
   duration: number;
   target: Target;
   trigger?: Trigger;
+}
+
+export interface FrameUpdate {
+  index: number;
+  frame: Frame;
 }
 
 export interface Target {

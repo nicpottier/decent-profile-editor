@@ -1,7 +1,7 @@
 import {LitElement, html, customElement, css} from 'lit-element';
 import {ProfileChart} from './profile-chart';
 import {FrameEditor} from './frame-editor';
-import {Profile, TargetType, Frame} from '../types';
+import {Profile, TargetType, FrameUpdate} from '../types';
 import {ifDefined} from 'lit-html/directives/if-defined';
 import merge from 'mergerino';
 import {EditableText} from './editable-text';
@@ -46,7 +46,6 @@ export class ProfileEditor extends LitElement {
     frames: [
       {
         name: 'Infuse',
-        index: 0,
         temp: 90,
         duration: 10,
         target: {
@@ -60,11 +59,11 @@ export class ProfileEditor extends LitElement {
 
   private _currentFrame = -1;
 
-  frameUpdated(e: CustomEvent<Frame>) {
+  frameUpdated(e: CustomEvent<FrameUpdate>) {
     console.log(e.detail);
     this._profile.frames[e.detail.index] = merge(
       this._profile.frames[e.detail.index],
-      e.detail
+      e.detail.frame
     );
     this._currentFrame = e.detail.index;
     this.requestUpdate();
@@ -74,7 +73,6 @@ export class ProfileEditor extends LitElement {
     console.log('frame added');
     this._profile.frames.push({
       name: 'Brew',
-      index: this._profile.frames.length,
       temp: 90,
       duration: 10,
       target: {

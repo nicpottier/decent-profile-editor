@@ -8,20 +8,21 @@ import {
 } from 'lit-element';
 import {TargetType, TriggerOperator, Trigger, TriggerType} from '../types';
 
-function incr(x: number): number {
-  return x + 1;
+function incr(max: number) {
+  return (x: number) => {
+    return Math.min(x + 1, max);
+  };
 }
 
-function decr(x: number): number {
-  return x - 1;
+function decr(min: number) {
+  return (x: number) => {
+    return Math.max(x - 1, min);
+  };
 }
 
 @customElement('frame-editor')
 export class FrameEditor extends LitElement {
   static styles = css`
-    .container {
-    }
-
     .inline {
       float: right;
       display: none;
@@ -179,11 +180,11 @@ export class FrameEditor extends LitElement {
   get _tempTemplate() {
     return html`
       <div class="block temp">
-        <div class="tap" @click="${() => this._update({temp: incr})}">
+        <div class="tap" @click="${() => this._update({temp: incr(110)})}">
           &#9650;
         </div>
         <div class="value">${this.temp}°C</div>
-        <div class="tap" @click="${() => this._update({temp: decr})}">
+        <div class="tap" @click="${() => this._update({temp: decr(65)})}">
           &#9660;
         </div>
       </div>
@@ -193,11 +194,11 @@ export class FrameEditor extends LitElement {
   get _durationTemplate() {
     return html`
       <div class="block duration">
-        <div class="tap" @click="${() => this._update({duration: incr})}">
+        <div class="tap" @click="${() => this._update({duration: incr(60)})}">
           &#9650;
         </div>
         <div class="value">${this.duration}s</div>
-        <div class="tap" @click="${() => this._update({duration: decr})}">
+        <div class="tap" @click="${() => this._update({duration: decr(1)})}">
           &#9660;
         </div>
       </div>
@@ -220,7 +221,7 @@ export class FrameEditor extends LitElement {
       <div class="block ${this.targetType}">
         <div
           class="tap"
-          @click="${() => this._update({target: {value: incr}})}"
+          @click="${() => this._update({target: {value: incr(12)}})}"
         >
           &#9650;
         </div>
@@ -232,7 +233,7 @@ export class FrameEditor extends LitElement {
         </div>
         <div
           class="tap"
-          @click="${() => this._update({target: {value: decr}})}"
+          @click="${() => this._update({target: {value: decr(0)}})}"
         >
           &#9660;
         </div>
@@ -281,7 +282,7 @@ export class FrameEditor extends LitElement {
       <div class="block trigger">
         <div
           class="tap"
-          @click="${() => this._update({trigger: {value: incr}})}"
+          @click="${() => this._update({trigger: {value: incr(12)}})}"
         >
           &#9650;
         </div>
@@ -291,7 +292,7 @@ export class FrameEditor extends LitElement {
         </div>
         <div
           class="tap"
-          @click="${() => this._update({trigger: {value: incr}})}"
+          @click="${() => this._update({trigger: {value: decr(0)}})}"
         >
           &#9660;
         </div>
@@ -368,7 +369,9 @@ export class FrameEditor extends LitElement {
 
   _update(patch: Object) {
     this.dispatchEvent(
-      new CustomEvent('frame-update', {detail: {index: this.index, ...patch}})
+      new CustomEvent('frame-update', {
+        detail: {index: this.index, frame: patch},
+      })
     );
   }
 }
