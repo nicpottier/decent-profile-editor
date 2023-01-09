@@ -37,7 +37,7 @@
     "normalize.css": "^8.0.1"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^0.10.0",
+    "@11ty/eleventy": "^1.0.2",
     "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.1",
     "@open-wc/testing": "^2.5.10",
     "@open-wc/testing-karma": "^4.0.5",
